@@ -38,4 +38,7 @@ Do not claim a successful AI consensus or point allocation without supplying tho
 
 ## Added live read evidence (2026-10-19)
 
+- Studio read `has_claimed_grant(0x4C7cb73aC8F8999af21cfc9fF4cF2333a9508Dcb)` returned `true` with `Response (Accepted)` (user-supplied output, 2026-10-19). Together with the reported `get_balance = 1000`, this is consistent with a previously claimed demo-credit grant. The underlying faucet transaction hash has not been supplied, so the grant write's finalized receipt remains unverified.
+
+
 From the deployer's Studio output: `get_balance(0x4C7cb73aC8F8999af21cfc9fF4cF2333a9508Dcb)` returned `1000` with `Response (Accepted)`. This verifies an accepted read call as reported, **not** that faucet claiming, pool settlement, or wallet-to-web flows have been demonstrated. Next obtain a finalized `claim_demo_credits` transaction if not already recorded; create a market and complete the two-wallet claim sequence.
