@@ -64,7 +64,7 @@ npm run dev
 npm run build
 ```
 
-The app intentionally shows **"Deployment not configured"** and no manufactured on-chain markets until `VITE_IFCAST_CONTRACT_ADDRESS` points to a verified deployment.
+The app uses the publicly reported Studio deployment `0xA0Ba214e2a4b848219A21515ff6b3A49162075C7` by default. Set `VITE_IFCAST_CONTRACT_ADDRESS` to override this value for later redeployments. It does not manufacture on-chain markets.
 
 ### Deploy to Studionet
 
@@ -107,3 +107,11 @@ All time arguments are **UTC Unix seconds**, with `close_at > transaction_time +
 - [GenLayerJS](https://docs.genlayer.com/api-references/genlayer-js)
 
 MIT licensed. Built experimentally for GenLayer. Not financial advice.
+
+## Studio deployment / on-chain evidence (19 Oct 2026)
+
+- Imported contract: [Studio](https://studio.genlayer.com/?import-contract=0xA0Ba214e2a4b848219A21515ff6b3A49162075C7)
+- Contract address: `0xA0Ba214e2a4b848219A21515ff6b3A49162075C7` (provided from Studio import URL by deployer)
+- Deployment transaction: [0xf3095b5854582ee61da774992c29a8e07e84b1c34ff8e924aee3b86e8c37ce17](https://explorer-studio.genlayer.com/tx/0xf3095b5854582ee61da774992c29a8e07e84b1c34ff8e924aee3b86e8c37ce17), shown FINALIZED in Studio screenshot.
+- Deployer's Studio read of `get_balance(0x4C7cb73aC8F8999af21cfc9fF4cF2333a9508Dcb)` returned `1000` with `Response (Accepted)` (user-provided output; independently verify receipt/state).
+- **Not yet shown:** market creation, two-wallet positioning, AI consensus market resolution, double-claim rejection, Vercel end-to-end interaction.
