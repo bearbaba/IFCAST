@@ -1,5 +1,6 @@
 import { createClient, isSuccessful } from 'genlayer-js';
 import { studionet } from 'genlayer-js/chains';
+import { TransactionHashVariant } from 'genlayer-js/types';
 
 export type Side = 'YES' | 'NO';
 export type MarketStatus = 'OPEN' | 'RESOLVED' | 'VOID';
@@ -28,7 +29,7 @@ const deployedAddress = () => {
 };
 
 export async function read<T>(fn: string, args: (string | number)[] = []): Promise<T> {
-  return await readClient.readContract({ address:deployedAddress(), functionName:fn, args }) as T;
+  return await readClient.readContract({ address:deployedAddress(), functionName:fn, args, transactionHashVariant:TransactionHashVariant.LATEST_FINAL }) as T;
 }
 
 export async function connectWallet(): Promise<string> {
