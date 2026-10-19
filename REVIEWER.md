@@ -53,3 +53,9 @@ From user-provided GenLayer Studio `get_market(1)` output (view-state evidence, 
 - `yes_pool=0`, `no_pool=0`, `attempts=0`, and no outcome or reason at inspection time.
 - This is an already-observable **historical event** market created solely to exercise contract mechanics. It must not be presented as a prospective or fair live prediction market; the source URLs can change, and even a recorded YES would require verifying time-bound evidence independently.
 - Outstanding evidence: `create_market` finalized transaction hash, two-wallet placement transactions, market resolution/AI trace and receipt, then claim/refund transactions.
+
+## Live Market #1 pool evidence (2026-10-19)
+
+The deployer supplied a later `get_market(1)` state response showing `status=OPEN`, `yes_pool=100`, `no_pool=200`, `attempts=0`, `outcome=""`, with immutable policy fields unchanged from the prior state. This is consistent with successful YES and NO position placements in the live contract and a total of **300 non-redeemable demo credits** committed. The two placement transaction hashes, distinct sender addresses and `get_position` values have **not** yet been provided; do not state that two distinct wallets or finalized write receipts are independently verified.
+
+Next gates: inspect each wallet's `get_position` and `get_balance`, wait until after `resolve_after=1792407600` (2026-10-19 11:00:00 UTC), execute `resolve_market(1)`, capture complete finalization/validator trace, then test claim once and duplicate claim rejection. If the source evidence is inconclusive the contract should remain `OPEN`; do not force a YES verdict.
