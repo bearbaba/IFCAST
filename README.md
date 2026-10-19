@@ -2,7 +2,7 @@
 
 **Conditional prediction markets with independently verified GenLayer AI consensus.**
 
-> **Status: early testnet implementation (v0.1). NOT deployed, audited, or approved for mainnet.** Demo credits have zero monetary value. The contract neither accepts nor pays GEN/ETH/USDC as stakes; GenLayer network transactions can still incur native network fees. Do not use it with real funds.
+> **Status: early testnet implementation (v0.1). A Studio deployment was reported FINALIZED on 2026-10-19, but the complete contract address, on-chain source match, and full transaction lifecycle have not yet been independently verified. Not audited or approved for mainnet.** Demo credits have zero monetary value. The contract neither accepts nor pays GEN/ETH/USDC as stakes; GenLayer network transactions can still incur native network fees. Do not use it with real funds.
 
 IFCAST tackles a common prediction-market ambiguity: *what if the prerequisite never happens?* A market defines an **IF precondition** and a **THEN target**. Its policy, URLs, close time, and earliest resolution time are committed when the market is created. The outcome is resolved by GenLayer's independent validator mechanism, while participant accounting and payouts remain deterministic.
 
@@ -74,7 +74,7 @@ The app intentionally shows **"Deployment not configured"** and no manufactured 
 4. Set `web/.env` to `VITE_IFCAST_CONTRACT_ADDRESS=0x...` and run the app. For Vercel, set **Root Directory: `web`**, build command `npm run build`, output `dist`, and the same environment variable for the target environment.
 5. Test with two distinct wallets. Both must independently claim demo credits. Call `create_market`, `place_position` from opposite wallets, then **after both market timestamps have passed**, `resolve_market`, and `claim`. Wait for finalization after each transaction.
 
-**There is deliberately no claimed deployed address, Vercel URL, or successful live consensus in this repository yet.** Do not submit to GenLayer Projects on the basis of local mock tests alone.
+**Deployment evidence (2026-10-19):** Studio screenshot shows an IFCAST contract deployed in Normal (Full Consensus) mode and the deployment transaction as FINALIZED: [0xf3095b5854582ee61da774992c29a8e07e84b1c34ff8e924aee3b86e8c37ce17](https://explorer-studio.genlayer.com/tx/0xf3095b5854582ee61da774992c29a8e07e84b1c34ff8e924aee3b86e8c37ce17). The Studio UI only displays a shortened address (0xA0...75C7). Complete contract address, source parity, chain receipt lookup, and all post-deployment method calls remain unverified. No Vercel URL or successful live market-resolution consensus has been established. Do not submit to GenLayer Projects on the basis of local mock tests alone.
 
 ### Read methods
 
