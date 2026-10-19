@@ -27,7 +27,7 @@ The contract locks participant demo credits when they select YES/NO. An independ
 
 ## Verified evidence
 
-- On-chain contract address: **PENDING — Studio screenshot shows 0xA0...75C7 (truncated)**
+- On-chain contract address: `0xA0Ba214e2a4b848219A21515ff6b3A49162075C7` (user supplied exact Studio import URL; source match independently unverified)
 - Network + chain ID: **Studio context suggests Studionet (target chain ID 61999); independently verify through RPC**
 - Deployment transaction: [`0xf3095b5854582ee61da774992c29a8e07e84b1c34ff8e924aee3b86e8c37ce17`](https://explorer-studio.genlayer.com/tx/0xf3095b5854582ee61da774992c29a8e07e84b1c34ff8e924aee3b86e8c37ce17) — **FINALIZED according to Studio screenshot; independently verify explorer/RPC and deployed source**
 - Resolution transaction: **NONE**
@@ -35,3 +35,7 @@ The contract locks participant demo credits when they select YES/NO. An independ
 - Real integration tests: **PENDING**
 
 Do not claim a successful AI consensus or point allocation without supplying those artifacts.
+
+## Added live read evidence (2026-10-19)
+
+From the deployer's Studio output: `get_balance(0x4C7cb73aC8F8999af21cfc9fF4cF2333a9508Dcb)` returned `1000` with `Response (Accepted)`. This verifies an accepted read call as reported, **not** that faucet claiming, pool settlement, or wallet-to-web flows have been demonstrated. Next obtain a finalized `claim_demo_credits` transaction if not already recorded; create a market and complete the two-wallet claim sequence.
