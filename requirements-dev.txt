@@ -1,0 +1,2 @@
+pytest>=8.3,<10
+# For official GenLayer direct mode/integration tests, install genlayer-test in a Python 3.12+ environment.

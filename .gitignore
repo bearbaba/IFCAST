@@ -1,0 +1,12 @@
+node_modules/
+web/dist/
+.env
+.env.*
+!.env.example
+!web/.env.example
+__pycache__/
+.pytest_cache/
+*.pyc
+.coverage
+.DS_Store
+.vscode/
