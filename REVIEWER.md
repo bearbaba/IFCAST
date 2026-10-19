@@ -2,7 +2,7 @@
 
 ## Submission status
 
-**Not submission-ready yet.** At this commit there is no verified GenLayer deployment or finished end-to-end demo. The scope is limited to a GitHub PR / release conditional market with **non-transferable, non-redeemable demo credits**. No test should use real-money collateral.
+**Not submission-ready yet.** A Studio screenshot dated 2026-10-19 shows a FINALIZED deployment transaction, but the complete contract address and on-chain source parity have not been independently verified. There is no finished end-to-end demo. The scope is limited to a GitHub PR / release conditional market with **non-transferable, non-redeemable demo credits**. No test should use real-money collateral.
 
 ## Contested consequence
 
@@ -27,9 +27,9 @@ The contract locks participant demo credits when they select YES/NO. An independ
 
 ## Verified evidence
 
-- On-chain contract address: **NOT DEPLOYED**
-- Network + chain ID: **TARGET = Studionet (61999); NOT VERIFIED LIVE**
-- Deployment transaction: **NONE**
+- On-chain contract address: **PENDING — Studio screenshot shows 0xA0...75C7 (truncated)**
+- Network + chain ID: **Studio context suggests Studionet (target chain ID 61999); independently verify through RPC**
+- Deployment transaction: [`0xf3095b5854582ee61da774992c29a8e07e84b1c34ff8e924aee3b86e8c37ce17`](https://explorer-studio.genlayer.com/tx/0xf3095b5854582ee61da774992c29a8e07e84b1c34ff8e924aee3b86e8c37ce17) — **FINALIZED according to Studio screenshot; independently verify explorer/RPC and deployed source**
 - Resolution transaction: **NONE**
 - Live web app: **NONE**
 - Real integration tests: **PENDING**
