@@ -50,7 +50,7 @@ SECURITY.md               Threat model and current limitations
 
 ## Local development
 
-Requirements: Node.js 20+ and Python 3.12+. For a live deployment you also need the current GenLayer CLI / GenLayer Studio and a testnet wallet with enough network-fee tokens.
+Requirements: Node.js 20+ and Python 3.12+. The frontend pins `genlayer-js@2.0.0-rc.1` because its fee-estimation and finalization APIs are not available in the stable v1 package; do not mix this preview SDK with an incompatible chain/node release. For a live deployment you also need the current GenLayer CLI / GenLayer Studio and a testnet wallet with enough network-fee tokens.
 
 ```bash
 python -m pip install -r requirements-dev.txt
