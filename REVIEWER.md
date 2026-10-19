@@ -42,3 +42,14 @@ Do not claim a successful AI consensus or point allocation without supplying tho
 
 
 From the deployer's Studio output: `get_balance(0x4C7cb73aC8F8999af21cfc9fF4cF2333a9508Dcb)` returned `1000` with `Response (Accepted)`. This verifies an accepted read call as reported, **not** that faucet claiming, pool settlement, or wallet-to-web flows have been demonstrated. Next obtain a finalized `claim_demo_credits` transaction if not already recorded; create a market and complete the two-wallet claim sequence.
+
+## Live Market #1 creation (2026-10-19)
+
+From user-provided GenLayer Studio `get_market(1)` output (view-state evidence, not a supplied transaction receipt):
+
+- ID: `1`; creator: `0x4c7cb73ac8f8999af21cfc9ff4cf2333a9508dcb`; status: `OPEN`.
+- `created_at=1792404395` (2026-10-19 10:06:35 UTC); `close_at=1792406700` (10:45 UTC); `resolve_after=1792407600` (11:00 UTC).
+- Exact source policy: `https://api.github.com/repos/vitejs/vite/pulls/23806` and `https://api.github.com/repos/vitejs/vite/releases/latest`.
+- `yes_pool=0`, `no_pool=0`, `attempts=0`, and no outcome or reason at inspection time.
+- This is an already-observable **historical event** market created solely to exercise contract mechanics. It must not be presented as a prospective or fair live prediction market; the source URLs can change, and even a recorded YES would require verifying time-bound evidence independently.
+- Outstanding evidence: `create_market` finalized transaction hash, two-wallet placement transactions, market resolution/AI trace and receipt, then claim/refund transactions.
