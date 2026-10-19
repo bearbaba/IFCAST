@@ -20,7 +20,9 @@ type WalletProvider = {
 };
 declare global { interface Window { ethereum?: WalletProvider } }
 
-export const contractAddress = import.meta.env.VITE_IFCAST_CONTRACT_ADDRESS as string | undefined;
+// Public Studionet contract deployed via GenLayer Studio on 2026-10-19.
+// Keep the environment override for future redeployments.
+export const contractAddress = (import.meta.env.VITE_IFCAST_CONTRACT_ADDRESS || '0xA0Ba214e2a4b848219A21515ff6b3A49162075C7') as string;
 export const ready = !!contractAddress && /^0x[a-fA-F0-9]{40}$/.test(contractAddress);
 const readClient = createClient({chain:studionet});
 const deployedAddress = () => {
