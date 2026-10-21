@@ -20,6 +20,12 @@ const tomorrowHour = () => {
 };
 const formDefault = () => ({kind:'TOUCH_ABOVE' as MarketKind, token_a:'ETH' as Token,
   token_b:'SOL' as Token, threshold:'2500', duration:24, start:tomorrowHour()});
+const priceUnits = (text: string): number | null => {
+  if (!/^\d+(?:\.\d{1,8})?$/.test(text)) return null;
+  const [whole, fraction=''] = text.split('.');
+  const value = Number(whole) * 100_000_000 + Number(fraction.padEnd(8, '0'));
+  return Number.isSafeInteger(value) && value > 0 && value <= 1_000_000_000_000_000 ? value : null;
+};
 const statusLabel = (m: Market, now: number) => m.status!=='OPEN'?m.status:now>=m.close_at*1000?'CLOSED':'OPEN';
 
 function App(){
@@ -117,9 +123,11 @@ function App(){
   const submitCreate=(event:React.FormEvent)=>{
     event.preventDefault();
     const start=Date.parse(`${form.start}Z`)/1000;
-    const threshold=previewKind?0:Math.round(Number(form.threshold)*100_000_000);
+    const threshold=previewKind?0:priceUnits(form.threshold);
+    const now=Math.floor(Date.now()/1000);
     if(!Number.isSafeInteger(start)||start%3600!==0){setError('Start must be a whole UTC hour.');return;}
-    if(!Number.isSafeInteger(threshold)||(!previewKind&&threshold<=0)){setError('Enter a valid positive USDT price.');return;}
+    if(start<now+900||start>now+7*86400){setError('Start must be 15 minutes to 7 days in the future.');return;}
+    if(threshold===null){setError('Enter a positive USDT price with at most 8 decimal places.');return;}
     if(invalidPair){setError('Choose two different assets.');return;}
     void transact('Create crypto market','create_market',[form.kind,form.token_a,previewKind?form.token_b:'',threshold,start,form.duration],()=>{setTab('markets');setForm(formDefault())});
   };
