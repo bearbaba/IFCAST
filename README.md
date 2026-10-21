@@ -4,7 +4,7 @@
 
 **Conditional prediction markets with independently verified GenLayer AI consensus.**
 
-> **Status: early testnet implementation (v0.1). NOT deployed, audited, or approved for mainnet.** Demo credits have zero monetary value. The contract neither accepts nor pays GEN/ETH/USDC as stakes; GenLayer network transactions can still incur native network fees. Do not use it with real funds.
+> **Status: early testnet implementation (v0.1). A Studio deployment was reported FINALIZED on 2026-10-19, but the complete contract address, on-chain source match, and full transaction lifecycle have not yet been independently verified. Not audited or approved for mainnet.** Demo credits have zero monetary value. The contract neither accepts nor pays GEN/ETH/USDC as stakes; GenLayer network transactions can still incur native network fees. Do not use it with real funds.
 
 IFCAST tackles a common prediction-market ambiguity: *what if the prerequisite never happens?* A market defines an **IF precondition** and a **THEN target**. Its policy, URLs, close time, and earliest resolution time are committed when the market is created. The outcome is resolved by GenLayer's independent validator mechanism, while participant accounting and payouts remain deterministic.
 
@@ -47,12 +47,13 @@ web/                      React / TypeScript / Vite GenLayer dApp
 tests/                    Deterministic local logic regression suite
 .github/workflows/ci.yml Basic Python and frontend build checks
 REVIEWER.md               Steward reproduction and acceptance gates
+LIVE_TEST.md              Studio two-wallet resolution and settlement runbook
 SECURITY.md               Threat model and current limitations
 ```
 
 ## Local development
 
-Requirements: Node.js 20+ and Python 3.12+. The frontend pins `genlayer-js@2.0.0-rc.1` because its fee-estimation and finalization APIs are not available in the stable v1 package; do not mix this preview SDK with an incompatible node/chain release. For a live deployment you also need the current GenLayer CLI / GenLayer Studio and a testnet wallet with enough network-fee tokens.
+Requirements: Node.js 20+ and Python 3.12+. The frontend pins `genlayer-js@2.0.0-rc.1` because its fee-estimation and finalization APIs are not available in the stable v1 package; do not mix this preview SDK with an incompatible chain/node release. For a live deployment you also need the current GenLayer CLI / GenLayer Studio and a testnet wallet with enough network-fee tokens.
 
 ```bash
 python -m pip install -r requirements-dev.txt
@@ -66,7 +67,7 @@ npm run dev
 npm run build
 ```
 
-The app intentionally shows **"Deployment not configured"** and no manufactured on-chain markets until `VITE_IFCAST_CONTRACT_ADDRESS` points to a verified deployment.
+The app uses the publicly reported Studio deployment `0xA0Ba214e2a4b848219A21515ff6b3A49162075C7` by default. Set `VITE_IFCAST_CONTRACT_ADDRESS` to override this value for later redeployments. It does not manufacture on-chain markets.
 
 ### Deploy to Studionet
 
@@ -76,7 +77,7 @@ The app intentionally shows **"Deployment not configured"** and no manufactured 
 4. Set `web/.env` to `VITE_IFCAST_CONTRACT_ADDRESS=0x...` and run the app. For Vercel, set **Root Directory: `web`**, build command `npm run build`, output `dist`, and the same environment variable for the target environment.
 5. Test with two distinct wallets. Both must independently claim demo credits. Call `create_market`, `place_position` from opposite wallets, then **after both market timestamps have passed**, `resolve_market`, and `claim`. Wait for finalization after each transaction.
 
-**There is deliberately no claimed deployed address, Vercel URL, or successful live consensus in this repository yet.** Do not submit to GenLayer Projects on the basis of local mock tests alone.
+**Deployment evidence (2026-10-19):** Studio screenshot shows an IFCAST contract deployed in Normal (Full Consensus) mode and the deployment transaction as FINALIZED: [0xf3095b5854582ee61da774992c29a8e07e84b1c34ff8e924aee3b86e8c37ce17](https://explorer-studio.genlayer.com/tx/0xf3095b5854582ee61da774992c29a8e07e84b1c34ff8e924aee3b86e8c37ce17). The Studio UI only displays a shortened address (0xA0...75C7). Complete contract address, source parity, chain receipt lookup, and all post-deployment method calls remain unverified. No Vercel URL or successful live market-resolution consensus has been established. Do not submit to GenLayer Projects on the basis of local mock tests alone.
 
 ### Read methods
 
@@ -87,6 +88,8 @@ The app intentionally shows **"Deployment not configured"** and no manufactured 
 `claim_demo_credits()`, `create_market(title, condition, target, condition_url, target_url, close_at, resolve_after)`, `place_position(market_id, side, amount)`, `resolve_market(market_id)`, `claim(market_id)`.
 
 All time arguments are **UTC Unix seconds**, with `close_at > transaction_time + 60`, `close_at < resolve_after`, and `resolve_after` at most one year into the future. `datetime.now(timezone.utc)` under GenVM is the **transaction's deterministic timestamp**, not validator wall-clock time.
+
+For the active Market #1 on the deployed contract, follow [LIVE_TEST.md](LIVE_TEST.md). It distinguishes a consensus ACCEPTED execution ERROR from a successful settlement and records the exact on-chain verification gates.
 
 ## Verification / release blockers
 
@@ -109,3 +112,11 @@ All time arguments are **UTC Unix seconds**, with `close_at > transaction_time +
 - [GenLayerJS](https://docs.genlayer.com/api-references/genlayer-js)
 
 MIT licensed. Built experimentally for GenLayer. Not financial advice.
+
+## Studio deployment / on-chain evidence (19 Oct 2026)
+
+- Imported contract: [Studio](https://studio.genlayer.com/?import-contract=0xA0Ba214e2a4b848219A21515ff6b3A49162075C7)
+- Contract address: `0xA0Ba214e2a4b848219A21515ff6b3A49162075C7` (provided from Studio import URL by deployer)
+- Deployment transaction: [0xf3095b5854582ee61da774992c29a8e07e84b1c34ff8e924aee3b86e8c37ce17](https://explorer-studio.genlayer.com/tx/0xf3095b5854582ee61da774992c29a8e07e84b1c34ff8e924aee3b86e8c37ce17), shown FINALIZED in Studio screenshot.
+- Deployer's Studio read of `get_balance(0x4C7cb73aC8F8999af21cfc9fF4cF2333a9508Dcb)` returned `1000` with `Response (Accepted)` (user-provided output; independently verify receipt/state).
+- **Not yet shown:** market creation, two-wallet positioning, AI consensus market resolution, double-claim rejection, Vercel end-to-end interaction.
