@@ -11,7 +11,7 @@ jobs:
         with:
           python-version: '3.12'
       - run: python -m pip install -r requirements-dev.txt
-      - run: python -m py_compile contracts/IFCast.py
+      - run: python -m py_compile contracts/IFCast.py contracts/IFCastCryptoV02.py contracts/IFCastUnifiedV03.py
       - run: python -m pytest -q tests/
   web:
     runs-on: ubuntu-latest

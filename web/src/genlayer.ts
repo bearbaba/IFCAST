@@ -2,62 +2,69 @@ import { createClient, isSuccessful } from 'genlayer-js';
 import { studionet } from 'genlayer-js/chains';
 import { TransactionHashVariant } from 'genlayer-js/types';
 
+export const TOKENS = ['BTC', 'ETH', 'SOL', 'BNB', 'DOGE', 'AVAX', 'LINK', 'XRP'] as const;
+export type Token = typeof TOKENS[number];
+export type PriceMarketKind = 'TOUCH_ABOVE' | 'TOUCH_BELOW' | 'OUTPERFORM';
+export type EventKind = 'SEC_SPOT_ETF_DECISION' | 'COINBASE_SPOT_LISTING';
+export type MarketKind = PriceMarketKind | EventKind;
 export type Side = 'YES' | 'NO';
 export type MarketStatus = 'OPEN' | 'RESOLVED' | 'VOID';
-export interface Market {
-  id: number; creator: string; title: string; condition: string; target: string;
-  condition_url: string; target_url: string; created_at: number; close_at: number;
-  resolve_after: number; status: MarketStatus; outcome: '' | 'YES' | 'NO' | 'VOID';
-  yes_pool: number; no_pool: number; reason: string; attempts: number; last_attempt_at: number;
-}
-export interface Position { side: Side; amount: number; claimed: boolean }
-export type Tx = {hash: string; label: string; status: 'pending' | 'finalized' | 'failed' | 'unverified'; at: number; error?: string};
-
-type WalletProvider = {
-  request: (args: {method: string; params?: unknown[]}) => Promise<unknown>;
-  on?: (event: string, cb: (...args: unknown[]) => void) => void;
-  removeListener?: (event: string, cb: (...args: unknown[]) => void) => void;
+type CommonMarket = {
+  id: number; creator: string; close_at: number; resolve_after: number;
+  status: MarketStatus; outcome: '' | 'YES' | 'NO' | 'VOID';
+  yes_pool: number; no_pool: number; reason: string; evidence_digest: string;
+  source: string; attempts: number; last_attempt_at: number;
 };
-declare global { interface Window { ethereum?: WalletProvider } }
+export type PriceMarket = CommonMarket & {
+  kind: PriceMarketKind; token_a: Token; token_b: Token | '';
+  target_e8: number; start_at: number; end_at: number; duration_hours: number;
+};
+export type EventMarket = CommonMarket & {
+  kind: EventKind; subject: string; deadline_at: number;
+  evidence_urls: string[]; verified_url: string; event_date: string; reviewed_evidence_count: number;
+};
+export type Market = PriceMarket | EventMarket;
+export const isEvent = (m: Market): m is EventMarket =>
+  m.kind === 'SEC_SPOT_ETF_DECISION' || m.kind === 'COINBASE_SPOT_LISTING';
+export interface Position { side: Side; amount: number; claimed: boolean }
+export type Tx = { hash: string; label: string; at: number; status: 'pending' | 'finalized' | 'unverified' | 'failed'; error?: string };
+type Provider = {
+  request: (args: {method: string; params?: unknown[]}) => Promise<unknown>;
+  on?: (event: string, cb: (...args: unknown[])=>void) => void;
+  removeListener?: (event: string, cb: (...args: unknown[])=>void) => void;
+};
+declare global { interface Window { ethereum?: Provider } }
 
-// Public Studionet contract deployed via GenLayer Studio on 2026-10-19.
-// Keep the environment override for future redeployments.
-export const contractAddress = (import.meta.env.VITE_IFCAST_CONTRACT_ADDRESS || '0xA0Ba214e2a4b848219A21515ff6b3A49162075C7') as string;
+// Deliberately NO fallback to the deployed v0.1 or v0.2 contracts.
+export const contractAddress = import.meta.env.VITE_IFCAST_UNIFIED_V03_ADDRESS as string | undefined;
 export const ready = !!contractAddress && /^0x[a-fA-F0-9]{40}$/.test(contractAddress);
-const readClient = createClient({chain:studionet});
-const deployedAddress = () => {
-  if (!ready) throw new Error('Contract address is missing or invalid. Configure VITE_IFCAST_CONTRACT_ADDRESS.');
+const readonlyClient = createClient({ chain: studionet });
+const requireContract = (): `0x${string}` => {
+  if (!ready) throw new Error('Unified v0.3 is not deployed/configured. Set VITE_IFCAST_UNIFIED_V03_ADDRESS after verifying the new Studionet contract.');
   return contractAddress as `0x${string}`;
 };
-
-export async function read<T>(fn: string, args: (string | number)[] = []): Promise<T> {
-  return await readClient.readContract({ address:deployedAddress(), functionName:fn, args, transactionHashVariant:TransactionHashVariant.LATEST_FINAL }) as T;
+export async function read<T>(functionName: string, args: (string | number)[] = []): Promise<T> {
+  return await readonlyClient.readContract({ address: requireContract(), functionName, args,
+    transactionHashVariant: TransactionHashVariant.LATEST_FINAL }) as T;
 }
-
 export async function connectWallet(): Promise<string> {
-  if (!window.ethereum) throw new Error('Install an EIP-1193 wallet such as MetaMask.');
-  const accounts = await window.ethereum.request({method:'eth_requestAccounts'}) as string[];
-  const address = accounts[0];
-  if (!/^0x[a-fA-F0-9]{40}$/.test(address ?? '')) throw new Error('Wallet did not return an address.');
-  const client = createClient({chain:studionet, account: address as `0x${string}`, provider:window.ethereum});
+  if (!window.ethereum) throw new Error('A compatible wallet such as MetaMask is required.');
+  const accounts = await window.ethereum.request({method: 'eth_requestAccounts'}) as string[];
+  const account = accounts?.[0];
+  if (!/^0x[a-fA-F0-9]{40}$/.test(account ?? '')) throw new Error('No valid wallet address returned.');
+  const client = createClient({chain: studionet, account: account as `0x${string}`, provider: window.ethereum});
   await client.connect('studionet');
-  return address;
+  return account;
 }
-
-export async function write(fn: string, args: (string | number)[], address: string, onHash: (hash: string) => void): Promise<string> {
-  if (!window.ethereum) throw new Error('No wallet provider found.');
-  if (!/^0x[a-fA-F0-9]{40}$/.test(address)) throw new Error('Connect a wallet first.');
-  const client = createClient({chain:studionet, account:address as `0x${string}`, provider:window.ethereum});
+export async function write(functionName: string, args: (string | number)[], account: string, onHash: (hash: string)=>void) {
+  if (!window.ethereum || !/^0x[a-fA-F0-9]{40}$/.test(account)) throw new Error('Connect your wallet first.');
+  const client = createClient({chain: studionet, account: account as `0x${string}`, provider: window.ethereum});
   await client.connect('studionet');
-  const writeInput = { address:deployedAddress(), functionName:fn, args };
-  // Never guess fees on a fee-charging chain; abort when estimation fails.
-  const estimate = await client.estimateTransactionFeesForWrite(writeInput);
-  const hash = await client.writeContract({
-    ...writeInput,
-    fees: {distribution:estimate.distribution, feeValue:estimate.feeValue},
-  });
+  const tx = {address: requireContract(), functionName, args};
+  const estimate = await client.estimateTransactionFeesForWrite(tx);
+  const hash = await client.writeContract({...tx, fees: {distribution: estimate.distribution, feeValue: estimate.feeValue}});
   onHash(hash);
-  const receipt = await readClient.waitForFinalization({hash});
-  if (!isSuccessful(receipt)) throw new Error('Transaction finalized without a successful execution. Inspect its receipt.');
+  const receipt = await readonlyClient.waitForFinalization({hash});
+  if (!isSuccessful(receipt)) throw new Error('Transaction reached finalization without successful execution. Check GenLayer Explorer.');
   return hash;
 }
