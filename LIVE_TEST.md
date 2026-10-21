@@ -77,3 +77,13 @@ When a Vercel web URL exists: read live market state via the configured Studione
 ## Security limitations
 
 The first version uses **GitHub PR + the mutable latest-release API only**, not a general-purpose trusted oracle. Missing proof of a negative is **UNKNOWN**, not NO. An absent/changed release API response can prevent settlement; do not override or manually invent the result. No real-money custody, transferable credits, or mainnet financial support is implemented. See [SECURITY.md](SECURITY.md).
+
+## Time-dependent source drift observed on 2026-10-21
+
+A live GitHub API re-check on 2026-10-21 confirmed why the first market must not assume a YES or NO outcome:
+
+- PR `vitejs/vite#23806`: `merged_at = 2026-10-18T06:48:24Z` (before the IF deadline).
+- [Tagged release `create-vite@9.3.0`](https://github.com/vitejs/vite/releases/tag/create-vite%409.3.0): `published_at = 2026-10-19T08:05:45Z`; notes explicitly cite `#23806`. This is affirmative **historical** YES evidence, within the market's target deadline (09:00Z on 2026-10-19).
+- However the market's immutable `target_url` points to **[releases/latest](https://api.github.com/repos/vitejs/vite/releases/latest)**, which on 2026-10-21 returned **`v8.3.5`**, published at `2026-10-21T06:35:46Z`, with **no** `#23806` mention.
+
+**Important:** The deployed v0.1 contract cannot fetch the tagged release through an arbitrary replacement URL. Do not change the source off-chain or assert that consensus has seen the historical release. The correct response to insufficient data from the pinned endpoint may be `UNKNOWN`, leaving market 1 `OPEN`. This finding is a v0.2 source-policy blocker: pin exact release identities or use a bounded archival release list with deterministic filtering and a fixed observation window, then redeploy a separate contract after tests. Never retrofit an already open market's terms.
