@@ -45,6 +45,7 @@ web/                      React / TypeScript / Vite GenLayer dApp
 tests/                    Deterministic local logic regression suite
 .github/workflows/ci.yml Basic Python and frontend build checks
 REVIEWER.md               Steward reproduction and acceptance gates
+LIVE_TEST.md              Studio two-wallet resolution and settlement runbook
 SECURITY.md               Threat model and current limitations
 ```
 
@@ -85,6 +86,8 @@ The app uses the publicly reported Studio deployment `0xA0Ba214e2a4b848219A21515
 `claim_demo_credits()`, `create_market(title, condition, target, condition_url, target_url, close_at, resolve_after)`, `place_position(market_id, side, amount)`, `resolve_market(market_id)`, `claim(market_id)`.
 
 All time arguments are **UTC Unix seconds**, with `close_at > transaction_time + 60`, `close_at < resolve_after`, and `resolve_after` at most one year into the future. `datetime.now(timezone.utc)` under GenVM is the **transaction's deterministic timestamp**, not validator wall-clock time.
+
+For the active Market #1 on the deployed contract, follow [LIVE_TEST.md](LIVE_TEST.md). It distinguishes a consensus ACCEPTED execution ERROR from a successful settlement and records the exact on-chain verification gates.
 
 ## Verification / release blockers
 
