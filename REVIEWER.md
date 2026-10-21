@@ -2,7 +2,7 @@
 
 ## Submission status
 
-**Not submission-ready yet.** A Studio screenshot dated 2026-10-19 shows a FINALIZED deployment transaction, but the complete contract address and on-chain source parity have not been independently verified. There is no finished end-to-end demo. The scope is limited to a GitHub PR / release conditional market with **non-transferable, non-redeemable demo credits**. No test should use real-money collateral.
+**Not submission-ready yet.** At this commit there is no verified GenLayer deployment or finished end-to-end demo. The scope is limited to a GitHub PR / release conditional market with **non-transferable, non-redeemable demo credits**. No test should use real-money collateral.
 
 ## Contested consequence
 
@@ -27,42 +27,11 @@ The contract locks participant demo credits when they select YES/NO. An independ
 
 ## Verified evidence
 
-- On-chain contract address: `0xA0Ba214e2a4b848219A21515ff6b3A49162075C7` (user supplied exact Studio import URL; source match independently unverified)
-- Network + chain ID: **Studio context suggests Studionet (target chain ID 61999); independently verify through RPC**
-- Deployment transaction: [`0xf3095b5854582ee61da774992c29a8e07e84b1c34ff8e924aee3b86e8c37ce17`](https://explorer-studio.genlayer.com/tx/0xf3095b5854582ee61da774992c29a8e07e84b1c34ff8e924aee3b86e8c37ce17) — **FINALIZED according to Studio screenshot; independently verify explorer/RPC and deployed source**
+- On-chain contract address: **NOT DEPLOYED**
+- Network + chain ID: **TARGET = Studionet (61999); NOT VERIFIED LIVE**
+- Deployment transaction: **NONE**
 - Resolution transaction: **NONE**
 - Live web app: **NONE**
 - Real integration tests: **PENDING**
 
 Do not claim a successful AI consensus or point allocation without supplying those artifacts.
-
-## Added live read evidence (2026-10-19)
-
-- Studio read `has_claimed_grant(0x4C7cb73aC8F8999af21cfc9fF4cF2333a9508Dcb)` returned `true` with `Response (Accepted)` (user-supplied output, 2026-10-19). Together with the reported `get_balance = 1000`, this is consistent with a previously claimed demo-credit grant. The underlying faucet transaction hash has not been supplied, so the grant write's finalized receipt remains unverified.
-
-
-From the deployer's Studio output: `get_balance(0x4C7cb73aC8F8999af21cfc9fF4cF2333a9508Dcb)` returned `1000` with `Response (Accepted)`. This verifies an accepted read call as reported, **not** that faucet claiming, pool settlement, or wallet-to-web flows have been demonstrated. Next obtain a finalized `claim_demo_credits` transaction if not already recorded; create a market and complete the two-wallet claim sequence.
-
-## Live Market #1 creation (2026-10-19)
-
-From user-provided GenLayer Studio `get_market(1)` output (view-state evidence, not a supplied transaction receipt):
-
-- ID: `1`; creator: `0x4c7cb73ac8f8999af21cfc9ff4cf2333a9508dcb`; status: `OPEN`.
-- `created_at=1792404395` (2026-10-19 10:06:35 UTC); `close_at=1792406700` (10:45 UTC); `resolve_after=1792407600` (11:00 UTC).
-- Exact source policy: `https://api.github.com/repos/vitejs/vite/pulls/23806` and `https://api.github.com/repos/vitejs/vite/releases/latest`.
-- `yes_pool=0`, `no_pool=0`, `attempts=0`, and no outcome or reason at inspection time.
-- This is an already-observable **historical event** market created solely to exercise contract mechanics. It must not be presented as a prospective or fair live prediction market; the source URLs can change, and even a recorded YES would require verifying time-bound evidence independently.
-- Outstanding evidence: `create_market` finalized transaction hash, two-wallet placement transactions, market resolution/AI trace and receipt, then claim/refund transactions.
-
-## Live Market #1 pool evidence (2026-10-19)
-
-The deployer supplied a later `get_market(1)` state response showing `status=OPEN`, `yes_pool=100`, `no_pool=200`, `attempts=0`, `outcome=""`, with immutable policy fields unchanged from the prior state. This is consistent with successful YES and NO position placements in the live contract and a total of **300 non-redeemable demo credits** committed. The two placement transaction hashes, distinct sender addresses and `get_position` values have **not** yet been provided; do not state that two distinct wallets or finalized write receipts are independently verified.
-
-Next gates: inspect each wallet's `get_position` and `get_balance`, wait until after `resolve_after=1792407600` (2026-10-19 11:00:00 UTC), execute `resolve_market(1)`, capture complete finalization/validator trace, then test claim once and duplicate claim rejection. If the source evidence is inconclusive the contract should remain `OPEN`; do not force a YES verdict.
-
-- Studio `get_position` returned `{"amount":100,"claimed":false,"side":"YES"}` with `Response (Accepted)` (user-provided output, 2026-10-19). Market ID and wallet input values were not displayed in this particular result, so ownership and exact method arguments must be confirmed with an unambiguous transaction/view trace. The 200-credit NO position still needs its own wallet-specific read.
-- Studio `get_position(1, 0xD6b8A3A5eB329410D9504784812b8569afA8C2aF)` returned `{"amount":200,"claimed":false,"side":"NO"}` with `Response (Accepted)` (user-provided output, 2026-10-19). This independently identifies wallet B as the NO-side participant; no write transaction hash was supplied. Market resolution and redemption remain pending.
-
-## Early resolution guard — observed in Studio
-
-On 2026-10-19 before 18:00 ICT (11:00 UTC), deployer executed `resolve_market(1)` before the immutable `resolve_after=1792407600` timestamp. Studio transaction screenshot shows **consensus status ACCEPTED, execution result ERROR**, with validator rollback reason `Resolution window has not opened`. Three displayed validators agreed with the revert; two were idle after quorum. This is an **expected time-gate rejection**, not evidence that live web/LLM verdict consensus succeeded or failed. The market should remain `OPEN` with `attempts=0`, pending an independent `get_market(1)` check. Do not treat ACCEPTED+ERROR as a successful market resolution. Re-attempt after 2026-10-19 11:00 UTC and capture the finalized write receipt, new market state and validator trace.

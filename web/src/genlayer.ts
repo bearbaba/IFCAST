@@ -4,16 +4,28 @@ import { TransactionHashVariant } from 'genlayer-js/types';
 
 export const TOKENS = ['BTC', 'ETH', 'SOL', 'BNB', 'DOGE', 'AVAX', 'LINK', 'XRP'] as const;
 export type Token = typeof TOKENS[number];
-export type MarketKind = 'TOUCH_ABOVE' | 'TOUCH_BELOW' | 'OUTPERFORM';
+export type PriceMarketKind = 'TOUCH_ABOVE' | 'TOUCH_BELOW' | 'OUTPERFORM';
+export type EventKind = 'SEC_SPOT_ETF_DECISION' | 'COINBASE_SPOT_LISTING';
+export type MarketKind = PriceMarketKind | EventKind;
 export type Side = 'YES' | 'NO';
 export type MarketStatus = 'OPEN' | 'RESOLVED' | 'VOID';
-export interface Market {
-  id: number; creator: string; kind: MarketKind; token_a: Token; token_b: Token | '';
+type CommonMarket = {
+  id: number; creator: string; close_at: number; resolve_after: number;
+  status: MarketStatus; outcome: '' | 'YES' | 'NO' | 'VOID';
+  yes_pool: number; no_pool: number; reason: string; evidence_digest: string;
+  source: string; attempts: number; last_attempt_at: number;
+};
+export type PriceMarket = CommonMarket & {
+  kind: PriceMarketKind; token_a: Token; token_b: Token | '';
   target_e8: number; start_at: number; end_at: number; duration_hours: number;
-  close_at: number; resolve_after: number; source: string; status: MarketStatus;
-  outcome: '' | 'YES' | 'NO' | 'VOID'; reason: string; evidence_digest: string;
-  yes_pool: number; no_pool: number; attempts: number; last_attempt_at: number;
-}
+};
+export type EventMarket = CommonMarket & {
+  kind: EventKind; subject: string; deadline_at: number;
+  evidence_urls: string[]; verified_url: string; event_date: string; reviewed_evidence_count: number;
+};
+export type Market = PriceMarket | EventMarket;
+export const isEvent = (m: Market): m is EventMarket =>
+  m.kind === 'SEC_SPOT_ETF_DECISION' || m.kind === 'COINBASE_SPOT_LISTING';
 export interface Position { side: Side; amount: number; claimed: boolean }
 export type Tx = { hash: string; label: string; at: number; status: 'pending' | 'finalized' | 'unverified' | 'failed'; error?: string };
 type Provider = {
@@ -23,12 +35,12 @@ type Provider = {
 };
 declare global { interface Window { ethereum?: Provider } }
 
-// Deliberately NO fallback to the deployed v0.1 GitHub-only contract.
-export const contractAddress = import.meta.env.VITE_IFCAST_CRYPTO_V02_ADDRESS as string | undefined;
+// Deliberately NO fallback to the deployed v0.1 or v0.2 contracts.
+export const contractAddress = import.meta.env.VITE_IFCAST_UNIFIED_V03_ADDRESS as string | undefined;
 export const ready = !!contractAddress && /^0x[a-fA-F0-9]{40}$/.test(contractAddress);
 const readonlyClient = createClient({ chain: studionet });
 const requireContract = (): `0x${string}` => {
-  if (!ready) throw new Error('Crypto v0.2 is not deployed/configured. Set VITE_IFCAST_CRYPTO_V02_ADDRESS after verifying the new Studionet contract.');
+  if (!ready) throw new Error('Unified v0.3 is not deployed/configured. Set VITE_IFCAST_UNIFIED_V03_ADDRESS after verifying the new Studionet contract.');
   return contractAddress as `0x${string}`;
 };
 export async function read<T>(functionName: string, args: (string | number)[] = []): Promise<T> {

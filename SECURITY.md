@@ -15,7 +15,6 @@ IFCAST is **not audited**. This is not a real-money market. Demo-credit balances
 ## Open issues / risk acceptance
 
 - Nondeterministic model can still misread external evidence or agree on false facts; exact field agreement is not objective truth.
-- **Observed real-world example (2026-10-21):** `vitejs/vite/releases/latest` advanced to `v8.3.5` (published 2026-10-21), no longer showing `#23806`; the earlier tagged `create-vite@9.3.0` release (published 2026-10-19) did cite that PR. A correct resolver must not use the new latest-release absence as negative proof for Market #1. This can result in an indefinitely unresolved market. v0.2 needs bounded historical release enumeration or immutable release identity plus independent validation. **This is a known correctness limitation and a mainnet blocker.**
 - `releases/latest` reflects only the most recent release. Time-window absence proofs are intentionally not supported. Expand sources and test before financial use.
 - Public GitHub API rate limiting, temporary 404/5xx, mutable release bodies, and changing source contents can affect consensus.
 - Storing markets as JSON in TreeMap is intentionally simple for v0.1, not optimal for high-scale state reads.
